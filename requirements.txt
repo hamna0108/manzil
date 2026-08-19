@@ -1,0 +1,26 @@
+# --- Core pipeline (Steps 0-3) ---
+pandas>=2.0
+numpy>=1.24
+geopy>=2.4
+sentence-transformers>=2.2
+
+# --- LLM extraction (Step 1) ---
+google-genai>=0.3
+torch>=2.0
+transformers>=4.45
+
+# --- New: Step 4 (Overpass) + Step 5/API stack ---
+fastapi>=0.115
+uvicorn[standard]>=0.30
+requests>=2.32
+
+# --- Environment management ---
+python-dotenv>=1.0
+
+# --- Optional: only needed if retraining/re-merging Qwen locally ---
+# peft>=0.13
+# accelerate>=1.0
+# bitsandbytes>=0.46      # CUDA-only -- skip on CPU-only or Apple Silicon
+# trl>=0.9
+# datasets>=2.20
+# torchao>=0.16
