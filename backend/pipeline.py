@@ -1,42 +1,21 @@
 from __future__ import annotations
 
-from dotenv import load_dotenv
-load_dotenv()
-#!/usr/bin/env python3
-"""
-pipeline.py
-=============
-
-Connects Step 1 (intent extraction, with clarification handling) to
-Steps 2 & 3 (hard filtering + semantic ranking), so a raw user query
-turns into ranked results end-to-end.
-
-Two-turn conversation model:
-
-    Turn 1: run_query(query, ...)
-        -> extracts intent
-        -> if ambiguous (e.g. "plot" with no subtype), returns
-           status="needs_clarification" with a question + options,
-           WITHOUT searching yet
-        -> otherwise searches immediately and returns status="ok"
-           with results
-
-    Turn 2 (only if turn 1 asked for clarification):
-        answer_clarification(intent, field, value, ...)
-        -> fills in the answered field, then searches
-
-This mirrors how a real chat UI would use it: call run_query() once;
-if the response says needs_clarification, show the question and options
-to the user, then call answer_clarification() with whatever they picked.
-"""
-
-
+import os
+import json
 import logging
 from typing import Optional
+from dotenv import load_dotenv
+
+load_dotenv()
 
 from intent_extractor import extract_query_intent
 from schema_utils import needs_clarification
 from search_engine import search_listings, DEFAULT_TOP_K
+
+# --- NEW IMPORTS ---
+from poi_verification import verify_pois_for_results
+from summary_generation import enrich_with_summary
+# -------------------
 
 logging.basicConfig(
     level=logging.INFO,
@@ -46,13 +25,16 @@ logging.basicConfig(
 logger = logging.getLogger("pipeline")
 
 
-def handle_search(intent: dict, listings_path: str, top_k: int = DEFAULT_TOP_K) -> dict:
+def handle_search(
+    intent: dict, 
+    query: str,              # Added so we can pass it to the summarizer
+    gemini_api_key: str,     # Added so we can pass it to the summarizer
+    listings_path: str, 
+    top_k: int = DEFAULT_TOP_K
+) -> dict:
     """
     Given an already-extracted intent, either request clarification or
-    run the actual search. Separated from run_query() so it can be
-    tested directly with a hand-built intent dict, without needing a
-    real Qwen/Gemini call -- extraction routing is already covered by
-    test_intent_extractor.py; this tests the NEW glue logic only.
+    run the actual search, verify POIs, and generate a summary.
     """
     clarification = needs_clarification(intent)
     if clarification:
@@ -64,9 +46,20 @@ def handle_search(intent: dict, listings_path: str, top_k: int = DEFAULT_TOP_K) 
             "message": None,
             "relaxed_constraints": [],
             "results": [],
+            "summary": None
         }
 
+    # Step 2 & 3: Search Listings
     search_response = search_listings(intent, listings_path=listings_path, top_k=top_k)
+
+    # Step 4: POI Verification
+    poi_terms = intent.get("poi", [])
+    if poi_terms and search_response.get("results"):
+        search_response["results"] = verify_pois_for_results(search_response["results"], poi_terms)
+
+    # Step 5: Summary Generation (and Re-ranking)
+    search_response = enrich_with_summary(search_response, query, intent, gemini_api_key)
+
     return {
         "status": "ok",
         "intent": intent,
@@ -82,85 +75,76 @@ def run_query(
     listings_path: str = "listings.json",
     top_k: int = DEFAULT_TOP_K,
 ) -> dict:
-    """
-    Full pipeline, turn 1: raw query -> intent -> (clarification OR results).
-
-    Returns a dict:
-        {
-            "status": "needs_clarification" | "ok",
-            "intent": dict,                    # the extracted intent so far
-            "clarification": dict | None,       # question+options if status is needs_clarification
-            "message": str | None,              # e.g. relaxed-constraints explanation
-            "relaxed_constraints": list[str],
-            "results": list[dict],
-        }
-    """
+    """Full pipeline, turn 1: raw query -> intent -> (clarification OR results)."""
     intent = extract_query_intent(query, gemini_api_key=gemini_api_key, qwen_path=qwen_path)
-    return handle_search(intent, listings_path=listings_path, top_k=top_k)
+    
+    # Pass query and gemini_api_key into handle_search
+    return handle_search(intent, query, gemini_api_key, listings_path=listings_path, top_k=top_k)
 
 
 def answer_clarification(
+    query: str,              # Needed for turn 2 summary
+    gemini_api_key: str,     # Needed for turn 2 summary
     intent: dict,
     field: str,
     value: str,
     listings_path: str,
     top_k: int = DEFAULT_TOP_K,
 ) -> dict:
-    """
-    Full pipeline, turn 2: the user answered a clarification question
-    (e.g. picked "Commercial Plot" or "Any"). Fills in the answered
-    field on the existing intent and completes the search.
-
-    IMPORTANT: "Any" is stored as the literal string "Any", NOT
-    converted to None. This matters: needs_clarification() treats a
-    None/empty subtype as "not yet answered" and would otherwise
-    re-trigger the same clarification question forever after the user
-    explicitly chose "Any" -- None can't distinguish "never asked" from
-    "explicitly answered as unconstrained". search_engine.py's hard
-    filter already treats the string "any" (case-insensitive) as
-    "skip this constraint", so no change is needed there.
-    """
+    """Full pipeline, turn 2: the user answered a clarification question."""
     updated_intent = dict(intent)
     updated_intent[field] = value.strip()
     logger.info("Clarification answered: %s = %r -- completing search.", field, updated_intent[field])
-    return handle_search(updated_intent, listings_path=listings_path, top_k=top_k)
+    
+    # Pass query and gemini_api_key into handle_search
+    return handle_search(updated_intent, query, gemini_api_key, listings_path=listings_path, top_k=top_k)
 
 
 # --------------------------------------------------------------------------- #
 # Demo
 # --------------------------------------------------------------------------- #
 def main() -> None:
-    import os
-    import json
-
     api_key = os.environ.get("GEMINI_API_KEY", "")
     qwen_path = os.environ.get("QWEN_MODEL_PATH")
-    listings_path = os.environ.get("LISTINGS_PATH", "listings.json")
+    
+    # Check if we should use ../data/listings.json or listings.json
+    default_listings = "../data/listings.json" if os.path.exists("../data/listings.json") else "listings.json"
+    listings_path = os.environ.get("LISTINGS_PATH", default_listings)
 
     if not api_key:
         logger.error("GEMINI_API_KEY environment variable is not set.")
         return
 
     print("\n--- Full pipeline: unambiguous query (should search immediately) ---")
-    resp = run_query("5 marla house in DHA Phase 6 under 2.5 crore", api_key, qwen_path, listings_path)
+    q1 = "5 marla house in bahria town near school in 1.8 crore"
+    resp = run_query(q1, api_key, qwen_path, listings_path)
     print(f"Status: {resp['status']}")
     print(f"Results: {len(resp['results'])}")
+    
+    # --- PRINT CLAUDE'S FINAL OUTPUTS ---
+    print("\n--- AI Summary ---")
+    print(resp.get("summary"))
+    
+    print("\n--- Top Verified POIs ---")
+    for r in resp.get("results", []):
+        print(f" - {r['title']} | POIs: {r.get('poi_verification')}")
 
-    print("\n--- Full pipeline: ambiguous plot query (should ask for clarification) ---")
-    resp = run_query("I want a plot in DHA Lahore under 1 crore", api_key, qwen_path, listings_path)
+    print("\n\n--- Full pipeline: ambiguous plot query (should ask for clarification) ---")
+    q2 = "I want a plot in DHA Lahore under 1 crore near a park"
+    resp = run_query(q2, api_key, qwen_path, listings_path)
     print(f"Status: {resp['status']}")
+    
     if resp["status"] == "needs_clarification":
         print(f"Question: {resp['clarification']['question']}")
         print(f"Options: {resp['clarification']['options']}")
 
         print("\n--- Simulating user picking 'Commercial Plot' ---")
-        resp2 = answer_clarification(resp["intent"], "subtype", "Commercial Plot", listings_path)
+        resp2 = answer_clarification(q2, api_key, resp["intent"], "subtype", "Commercial Plot", listings_path)
         print(f"Status: {resp2['status']}")
-        print(f"Results: {len(resp2['results'])}")
-        for r in resp2["results"]:
-            # Format price with commas, or show a fallback if price is missing
-            price = f"PKR {r['price_pkr']:,}" if r.get('price_pkr') else "Price on request"
-            print(f"  - {r['title']} [{r['subtype']}] - {price}")
+        
+        # --- PRINT CLAUDE'S FINAL OUTPUTS ---
+        print("\n--- AI Summary ---")
+        print(resp2.get("summary"))
 
 
 if __name__ == "__main__":

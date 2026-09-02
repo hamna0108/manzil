@@ -1,0 +1,39 @@
+# --- Web framework ---
+fastapi>=0.115
+uvicorn[standard]>=0.30
+pydantic>=2.9
+pydantic[email]>=2.9
+pydantic-settings>=2.5
+
+# --- Database ---
+sqlalchemy>=2.0
+asyncpg>=0.29
+alembic>=1.13
+
+# --- Auth ---
+python-jose[cryptography]>=3.3
+passlib[bcrypt]>=1.7
+bcrypt==4.0.1  # pinned: passlib 1.7.x is incompatible with bcrypt>=4.1
+              # (bcrypt 4.1 removed __about__.__version__, which passlib's
+              # version-detection code depends on -- a known, widely-reported
+              # issue between these two libraries, confirmed here directly).
+              # If you later see passlib updated to fix this, this pin can
+              # be removed and bcrypt upgraded again.
+python-multipart>=0.0.9
+
+# --- Existing pipeline (Steps 0-5) ---
+pandas>=2.0
+numpy>=1.24
+geopy>=2.4.1
+sentence-transformers>=2.2
+google-genai>=0.3
+torch>=2.0
+transformers>=4.45
+requests>=2.32
+
+# --- Environment ---
+python-dotenv>=1.0
+
+# --- Web scraping / browser automation ---
+playwright==1.47.0
+python-dateutil==2.9.0.post0

@@ -1,0 +1,28 @@
+root ::= "{" ws
+  "\"property_type\"" ws ":" ws property_type "," ws
+  "\"subtype\"" ws ":" ws (subtype | "null") "," ws
+  "\"location\"" ws ":" ws (string | "null") "," ws
+  "\"price_max\"" ws ":" ws (number | "null") "," ws
+  "\"marla_min\"" ws ":" ws (number | "null") "," ws
+  "\"marla_max\"" ws ":" ws (number | "null") "," ws
+  "\"bedrooms\"" ws ":" ws (integer | "null") "," ws
+  "\"soft_signals\"" ws ":" ws string_array
+"}" ws
+
+property_type ::= "\"House\"" | "\"Flat\"" | "\"Farmhouse\"" | "\"Plot\""
+
+subtype ::= "\"Residential\"" | "\"Commercial\"" | "\"Agricultural\"" | "\"Industrial\""
+
+string_array ::= "[" ws (string (ws "," ws string)*)? ws "]"
+
+string ::= "\"" char* "\""
+
+char ::= [^"\\\x00-\x1F] | "\\" (["\\/bfnrt] | "u" hex hex hex hex)
+
+hex ::= [0-9a-fA-F]
+
+number ::= "-"? integer ("." [0-9]+)?
+
+integer ::= "0" | [1-9] [0-9]*
+
+ws ::= [ \t\n]*

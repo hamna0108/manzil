@@ -31,13 +31,14 @@ INTENT_SCHEMA = {
 
 REQUIRED_KEYS = set(INTENT_SCHEMA.keys())
 
-VALID_PROPERTY_TYPES = {"House", "Flat", "Farmhouse", "Plot"}
+VALID_PROPERTY_TYPES = {"House", "Flat", "Farmhouse", "Plot", "Commercial"}
 
 SUBTYPES_BY_CATEGORY = {
     "House": {"House", "Upper Portion", "Lower Portion", "Room"},
     "Flat": {"Flat", "Penthouse"},
     "Farmhouse": {"Farmhouse"},
     "Plot": {"Residential Plot", "Commercial Plot", "Agricultural Land", "Industrial Land", "Plot File"},
+    "Commercial": {"Shop", "Office", "Building", "Warehouse", "Factory"},
 }
 
 # Categories where an unspecified subtype is ambiguous enough that the
@@ -94,10 +95,11 @@ apologize, or add any text outside the JSON object.
      * Flat subtypes: "Flat", "Penthouse".
      * Farmhouse subtype: always "Farmhouse".
      * Plot subtypes: "Residential Plot", "Commercial Plot",
-       "Agricultural Land", "Industrial Land", "Plot File". If the user
-       just says "plot" or "land" with no qualifier, leave subtype null.
-     * NEVER invent a subtype string outside these lists (e.g. never
-       output "Apartment" or "Bungalow" as a subtype value).
+       "Agricultural Land", "Industrial Land", "Plot File". 
+     * CRITICAL RULE FOR PLOTS: NEVER GUESS OR ASSUME THE SUBTYPE. If the 
+       user just says "plot" or "land" without explicitly stating 
+       "Commercial", "Residential", etc., you MUST leave subtype as null.
+     * NEVER invent a subtype string outside these lists.
 
 4. LOCATION:
    - Extract the most specific location phrase mentioned, exactly as
@@ -191,22 +193,60 @@ def is_schema_valid(resp) -> tuple[bool, str]:
     return True, "ok"
 
 
-def normalize_intent(parsed: dict) -> dict:
+def _plot_subtype_is_explicit(query: str, subtype: str) -> bool:
+  query_lower = query.lower()
+  subtype_lower = subtype.lower()
+  if subtype_lower == "residential plot":
+    return "residential" in query_lower
+  if subtype_lower == "commercial plot":
+    return "commercial" in query_lower
+  if subtype_lower == "agricultural land":
+    return "agricultural" in query_lower or "farm land" in query_lower or "farmland" in query_lower
+  if subtype_lower == "industrial land":
+    return "industrial" in query_lower
+  if subtype_lower == "plot file":
+    return "plot file" in query_lower or "file plot" in query_lower
+  return False
+
+
+def normalize_intent(parsed: dict, raw_query: str | None = None) -> dict:
     """
     Coerces a schema-valid (or close-to-valid) raw dict into a clean
     INTENT_SCHEMA-shaped dict with safe fallbacks for anything malformed.
-    Always returns a dict with exactly REQUIRED_KEYS, never raises.
     """
     intent = dict(INTENT_SCHEMA)
     if not isinstance(parsed, dict):
         return intent
 
+    # --- Rule-Based Commercial Patch (No Retraining Required) ---
+    if raw_query:
+        q_low = raw_query.lower()
+        if any(w in q_low for w in ["shop", "dukan", "dukaan", "store"]):
+            parsed["property_type"] = "Commercial"
+            parsed["subtype"] = "Shop"
+        elif any(w in q_low for w in ["office", "dafter", "daftar"]):
+            parsed["property_type"] = "Commercial"
+            parsed["subtype"] = "Office"
+        elif any(w in q_low for w in ["warehouse", "godown", "godam", "factory"]):
+            parsed["property_type"] = "Commercial"
+            parsed["subtype"] = "Warehouse"
+        elif any(w in q_low for w in ["plaza", "commercial building"]):
+            parsed["property_type"] = "Commercial"
+            parsed["subtype"] = "Building"
+    # -------------------------------------------------------------
+
     cat = parsed.get("property_type")
     intent["property_type"] = _case_insensitive_match(cat, VALID_PROPERTY_TYPES) if cat else None
 
-    sub = parsed.get("subtype")
-    allowed = SUBTYPES_BY_CATEGORY.get(intent["property_type"], set())
-    intent["subtype"] = _case_insensitive_match(sub, allowed) if sub else None
+    # A model can emit a valid Plot subtype even when the query only says
+    # "plot". Require subtype evidence from the user's actual wording.
+    if (
+      intent["property_type"] == "Plot"
+      and intent["subtype"] is not None
+      and raw_query is not None
+      and not _plot_subtype_is_explicit(raw_query, intent["subtype"])
+    ):
+      intent["subtype"] = None
 
     location = parsed.get("location")
     intent["location"] = location.strip() if isinstance(location, str) and location.strip() else None

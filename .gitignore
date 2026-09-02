@@ -14,3 +14,6 @@ data/listings.json
 
 # Model weights
 models/
+listings.json
+backend/debug/
+node_modules/

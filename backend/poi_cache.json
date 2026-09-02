@@ -1,0 +1,362 @@
+{
+  "31.3581:74.1824:hospital": {
+    "hospital": {
+      "verified": true,
+      "distance_m": 115,
+      "name": "د طارق لطیف طبي مرکز.",
+      "osm_id": 11738657722
+    }
+  },
+  "31.5882:74.315:school": {
+    "school": {
+      "verified": true,
+      "distance_m": 260,
+      "name": "Govt. Special Education Center",
+      "osm_id": 968013364
+    }
+  },
+  "31.3581:74.1824:school": {
+    "school": {
+      "verified": true,
+      "distance_m": 1156,
+      "name": "Beacon House School Bahria Town Campus",
+      "osm_id": 445265465
+    }
+  },
+  "25.0692:67.3289:school": {
+    "school": {
+      "verified": true,
+      "distance_m": 3254,
+      "name": "School",
+      "osm_id": 5665359516
+    }
+  },
+  "32.202:74.1964:mosque": {
+    "mosque": {
+      "verified": true,
+      "distance_m": 247,
+      "name": "Mosque",
+      "osm_id": 3611318487
+    }
+  },
+  "31.5022:74.3264:mosque": {
+    "mosque": {
+      "verified": true,
+      "distance_m": 358,
+      "name": "Mosque",
+      "osm_id": 544501216
+    }
+  },
+  "31.475:74.3782:hospital": {
+    "hospital": {
+      "verified": true,
+      "distance_m": 662,
+      "name": "DHA Medical Center Phase III",
+      "osm_id": 271105745
+    }
+  },
+  "31.4526:74.2024:mosque": {
+    "mosque": {
+      "verified": true,
+      "distance_m": 892,
+      "name": "Mosque",
+      "osm_id": 3205335197
+    }
+  },
+  "31.5634:74.4224:school": {
+    "school": {
+      "verified": true,
+      "distance_m": 438,
+      "name": "Govt. Pirmary School",
+      "osm_id": 235330050
+    }
+  },
+  "31.416:74.2049:school": {
+    "school": {
+      "verified": true,
+      "distance_m": 1491,
+      "name": "Examination Office",
+      "osm_id": 327095128
+    }
+  },
+  "31.475:74.3782:school": {
+    "school": {
+      "verified": true,
+      "distance_m": 234,
+      "name": "Beaconhouse school",
+      "osm_id": 4281904200
+    }
+  },
+  "31.5178:74.3267:school": {
+    "school": {
+      "verified": true,
+      "distance_m": 677,
+      "name": "skans abu bakar",
+      "osm_id": 4958901223
+    }
+  },
+  "30.1978:71.472:hospital": {
+    "hospital": {
+      "verified": true,
+      "distance_m": 464,
+      "name": "سول ہسپتال",
+      "osm_id": 4482542260
+    }
+  },
+  "32.1766:74.1873:hospital": {
+    "hospital": {
+      "verified": true,
+      "distance_m": 253,
+      "name": "Medcare International Hospital",
+      "osm_id": 4903545837
+    }
+  },
+  "31.4706:74.2729:school": {
+    "school": {
+      "verified": true,
+      "distance_m": 732,
+      "name": "Shofait Intl",
+      "osm_id": 303945094
+    }
+  },
+  "31.4526:74.2024:school": {
+    "school": {
+      "verified": true,
+      "distance_m": 1389,
+      "name": "SOAR Stem School EME Sector DHA",
+      "osm_id": 316723531
+    }
+  },
+  "31.3626:74.2338:school": {
+    "school": {
+      "verified": true,
+      "distance_m": 3432,
+      "name": "University Of Lahore Defence Road Campus",
+      "osm_id": 4404141789
+    }
+  },
+  "31.5249:74.4485:school": {
+    "school": {
+      "verified": true,
+      "distance_m": 64,
+      "name": "The National School",
+      "osm_id": 691409563
+    }
+  },
+  "33.4917:73.0958:school": {
+    "school": {
+      "verified": true,
+      "distance_m": 141,
+      "name": "Raiha Campus",
+      "osm_id": 441166400
+    }
+  },
+  "33.5421:73.1153:school": {
+    "school": {
+      "verified": true,
+      "distance_m": 970,
+      "name": "Roots Ivy College",
+      "osm_id": 1174042136
+    }
+  },
+  "31.4525:74.2526:school": {
+    "school": {
+      "verified": true,
+      "distance_m": 1359,
+      "name": "The University of lahore, Raiwand Road Campus",
+      "osm_id": 4249836089
+    }
+  },
+  "31.512:74.343:market": {
+    "market": {
+      "verified": true,
+      "distance_m": 73,
+      "name": "Aashiana Shopping Centre",
+      "osm_id": 670305883
+    }
+  },
+  "31.4665:74.3819:hospital": {
+    "hospital": {
+      "verified": true,
+      "distance_m": 527,
+      "name": "ساو آن طبي مرکز",
+      "osm_id": 546081030
+    }
+  },
+  "31.4922:74.3299:hospital": {
+    "hospital": {
+      "verified": true,
+      "distance_m": 717,
+      "name": "Al-Rehman Hospital",
+      "osm_id": 4920146640
+    }
+  },
+  "31.5392:74.315:hospital": {
+    "hospital": {
+      "verified": true,
+      "distance_m": 215,
+      "name": "حمزه روغتون",
+      "osm_id": 2448144940
+    }
+  },
+  "31.4931:74.3273:hospital": {
+    "hospital": {
+      "verified": true,
+      "distance_m": 959,
+      "name": "Dr. Altaf Cheema",
+      "osm_id": 5741578396
+    }
+  },
+  "31.471:74.2725:hospital": {
+    "hospital": {
+      "verified": true,
+      "distance_m": 295,
+      "name": "Dental Experts Johar Town Lahore",
+      "osm_id": 7165556234
+    }
+  },
+  "24.7724:67.0769:hospital": {
+    "hospital": {
+      "verified": true,
+      "distance_m": 1388,
+      "name": "Hospital",
+      "osm_id": 1137819003
+    }
+  },
+  "31.4697:74.3996:hospital": {
+    "hospital": {
+      "verified": true,
+      "distance_m": 1427,
+      "name": "ساو آن طبي مرکز",
+      "osm_id": 546081030
+    }
+  },
+  "29.3211:68.5811:hospital": {
+    "hospital": {
+      "verified": false,
+      "distance_m": null,
+      "name": null,
+      "osm_id": null
+    }
+  },
+  "24.7945:67.0409:hospital": {
+    "hospital": {
+      "verified": true,
+      "distance_m": 441,
+      "name": "Allana house",
+      "osm_id": 12146588728
+    }
+  },
+  "24.8022:67.0754:hospital": {
+    "hospital": {
+      "verified": true,
+      "distance_m": 1061,
+      "name": "Aesthetic Shape",
+      "osm_id": 5130890300
+    }
+  },
+  "30.3863:71.971:hospital": {
+    "hospital": {
+      "verified": false,
+      "distance_m": null,
+      "name": null,
+      "osm_id": null
+    }
+  },
+  "33.506:73.0769:hospital": {
+    "hospital": {
+      "verified": true,
+      "distance_m": 2194,
+      "name": "AT Skin & Aesthetic Clinic",
+      "osm_id": 11655758860
+    }
+  },
+  "33.5486:73.1327:hospital": {
+    "hospital": {
+      "verified": true,
+      "distance_m": 687,
+      "name": "Reliance Hospital",
+      "osm_id": 5165252847
+    }
+  },
+  "33.5637:73.1211:hospital": {
+    "hospital": {
+      "verified": true,
+      "distance_m": 157,
+      "name": "Hospital",
+      "osm_id": 13433015901
+    }
+  },
+  "33.506:73.0769:market": {
+    "market": {
+      "verified": true,
+      "distance_m": 1337,
+      "name": "Market",
+      "osm_id": 13697781137
+    }
+  },
+  "33.5637:73.1211:market": {
+    "market": {
+      "verified": true,
+      "distance_m": 592,
+      "name": "HAK Mall",
+      "osm_id": 4947401428
+    }
+  },
+  "33.5031:73.0963:market": {
+    "market": {
+      "verified": true,
+      "distance_m": 1244,
+      "name": "Ripples",
+      "osm_id": 4389460717
+    }
+  },
+  "33.4917:73.0958:market": {
+    "market": {
+      "verified": true,
+      "distance_m": 202,
+      "name": "Rainbow Cash And Carry",
+      "osm_id": 12484813203
+    }
+  },
+  "33.4877:73.0727:market": {
+    "market": {
+      "verified": true,
+      "distance_m": 1128,
+      "name": "Signature's 170",
+      "osm_id": 7116200583
+    }
+  },
+  "31.4838:74.3839:hospital": {
+    "hospital": {
+      "verified": true,
+      "distance_m": 503,
+      "name": "Shaukat Khanum Laboratory",
+      "osm_id": 5273489542
+    }
+  },
+  "33.5486:73.1327:school": {
+    "school": {
+      "verified": true,
+      "distance_m": 396,
+      "name": "Ace International Academy Junior Campus",
+      "osm_id": 1293577834
+    }
+  },
+  "33.4877:73.0727:school": {
+    "school": {
+      "verified": true,
+      "distance_m": 11,
+      "name": "Future World School Bahria Town Rawalpindi",
+      "osm_id": 892388444
+    }
+  },
+  "33.5913:73.3882:school": {
+    "school": {
+      "verified": false,
+      "distance_m": null,
+      "name": null,
+      "osm_id": null
+    }
+  }
+}
